@@ -31,7 +31,8 @@
             justify-content: center;
             gap: 20px;
             margin-top: 10px;
-            flex-wrap: wrap; 
+            flex-wrap: wrap;
+            width: 100%;
         }
         .time-box {
             background: rgba(20, 20, 20, 0.9);
@@ -72,6 +73,23 @@
             font-weight: bold;
             margin-top: 30px;
         }
+        /* För att göra designen responsiv */
+        @media (max-width: 768px) {
+            .time-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .time-box {
+                width: 90%;
+                margin-bottom: 10px;
+            }
+            .retro-text {
+                font-size: 1.5rem;
+            }
+            .countdown {
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -84,7 +102,7 @@
             <button onclick="convertToAustralia()">Konvertera till Australien</button>
         </div>
         <div class="time-box">
-            <h2>Australien (Sydney)</h2>
+            <h2>Australien</h2>
             <p id="australia-time"></p>
             <input type="time" id="australia-input">
             <button onclick="convertToSweden()">Konvertera till Sverige</button>
@@ -145,7 +163,7 @@
         setInterval(updateCurrentTime, 1000);
         window.onload = updateCurrentTime;
 
-        // Nedräkning!
+        // Nedräkning till 4 april 2025 17:00 svensk tid
         function updateCountdown() {
             const countdownDate = new Date("2025-04-04T17:00:00+02:00").getTime();
             const now = new Date().getTime();
