@@ -67,6 +67,13 @@
             background: #00ffff;
             box-shadow: 2px 2px 0px #ff00ff;
         }
+        .countdown {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            color: #ffcc00;
+            font-weight: bold;
+            text-shadow: 2px 2px 0px #ff00ff;
+        }
     </style>
 </head>
 <body>
@@ -79,12 +86,15 @@
             <button onclick="convertToAustralia()">Konvertera till Australien</button>
         </div>
         <div class="time-box">
-            <h2>Australien</h2>
+            <h2>Australien (Sydney)</h2>
             <p id="australia-time"></p>
             <input type="time" id="australia-input">
             <button onclick="convertToSweden()">Konvertera till Sverige</button>
         </div>
     </div>
+
+    <div class="countdown" id="countdown"></div>
+
     <script>
         function convertToAustralia() {
             const swedenInput = document.getElementById('sweden-input').value;
@@ -114,7 +124,27 @@
             document.getElementById('sweden-time').textContent = nowSweden.toLocaleTimeString('sv-SE');
             document.getElementById('australia-time').textContent = nowAustralia.toLocaleTimeString('sv-SE');
         }
+
+        function updateCountdown() {
+            const targetDate = new Date('2025-04-04T17:00:00+02:00'); // 4 april 2025 17:00 svensk tid
+            const now = new Date();
+            const remainingTime = targetDate - now;
+
+            if (remainingTime <= 0) {
+                document.getElementById('countdown').textContent = "Nedräkningen är slut!";
+                return;
+            }
+
+            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').textContent = `Nedräkning: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
         setInterval(updateCurrentTime, 1000);
+        setInterval(updateCountdown, 1000);
         window.onload = updateCurrentTime;
     </script>
 </body>
