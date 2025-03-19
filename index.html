@@ -67,6 +67,11 @@
             background: #00ffff;
             box-shadow: 2px 2px 0px #ff00ff;
         }
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -86,6 +91,11 @@
         </div>
     </div>
 
+    <!-- Nedräkning till den 4 april 2025 -->
+    <div class="countdown">
+        <p id="countdown-timer"></p>
+    </div>
+
     <!-- Button to play music -->
     <button onclick="playMusic()">Spela musik</button>
 
@@ -94,7 +104,8 @@
 
     <script>
         let musicPlayed = false;
-        
+
+        // Play music when the button is clicked
         function playMusic() {
             const player = document.getElementById('music-player');
             if (!musicPlayed) {
@@ -133,6 +144,26 @@
         }
         setInterval(updateCurrentTime, 1000);
         window.onload = updateCurrentTime;
+
+        // Nedräkning!
+        function updateCountdown() {
+            const countdownDate = new Date("2025-04-04T17:00:00+02:00").getTime();
+            const now = new Date().getTime();
+            const timeLeft = countdownDate - now;
+
+            if (timeLeft < 0) {
+                document.getElementById("countdown-timer").textContent = "Tiden har gått ut!";
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById("countdown-timer").textContent = `Nedräkning: ${days} dagar ${hours} timmar ${minutes} minuter ${seconds} sekunder`;
+        }
+        setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
