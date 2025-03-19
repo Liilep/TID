@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tid i Sverige & Australien</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            background: linear-gradient(90deg, #1a1a2e, #16213e, #0f3460);
+            color: #ffcc00;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .retro-text {
+            font-size: 2.5rem;
+            text-shadow: 4px 4px 0px #ff00ff, 8px 8px 0px #00ffff;
+            text-transform: uppercase;
+        }
+        .time-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .time-box {
+            background: rgba(20, 20, 20, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 20px rgba(255, 0, 255, 0.8);
+            width: 250px;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #ff00ff;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+        }
+        button {
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #00ffff;
+        }
+        canvas {
+            width: 150px;
+            height: 150px;
+            background: black;
+            border-radius: 50%;
+            border: 4px solid #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="retro-text">Tid i Sverige & Australien</h1>
+    <div class="time-container">
+        <div class="time-box">
+            <h2>Sverige</h2>
+            <p id="sweden-time"></p>
+            <canvas id="sweden-clock" width="150" height="150"></canvas>
+            <input type="time" id="sweden-input"> 
+            <button onclick="convertToAustralia()">Konvertera till Australien</button>
+        </div>
+        <div class="time-box">
+            <h2>Australien (Sydney)</h2>
+            <p id="australia-time"></p>
+            <canvas id="australia-clock" width="150" height="150"></canvas>
+            <input type="time" id="australia-input">
+            <button onclick="convertToSweden()">Konvertera till Sverige</button>
+        </div>
+    </div>
+    <script>
+        function updateCurrentTime() {
+            const now = new Date();
+            document.getElementById('sweden-time').textContent = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm', timeStyle: 'short' }).format(now);
+            document.getElementById('australia-time').textContent = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Australia/Sydney', timeStyle: 'short' }).format(now);
+            drawAnalogClock('sweden-clock', 'Europe/Stockholm');
+            drawAnalogClock('australia-clock', 'Australia/Sydney');
+        }
+
+        function convertToAustralia() {
+            const swedenInput = document.getElementById('sweden-input').value;
+            if (!swedenInput) return;
+            const [hours, minutes] = swedenInput.split(':').map(Number);
+            let date = new Date();
+            date.setHours(hours, minutes);
+            let australiaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+            document.getElementById('australia-input').value = australiaDate.toTimeString().slice(0,5);
+        }
+        
+        function convertToSweden() {
+            const australiaInput = document.getElementById('australia-input').value;
+            if (!australiaInput) return;
+            const [hours, minutes] = australiaInput.split(':').map(Number);
+            let date = new Date();
+            date.setHours(hours, minutes);
+            let swedenDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Stockholm' }));
+            document.getElementById('sweden-input').value = swedenDate.toTimeString().slice(0,5);
+        }
+
+        function drawAnalogClock(canvasId, timeZone) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const now = new Date();
+            const hours = new Date(now.toLocaleString('en-US', { timeZone: timeZone })).getHours() % 12;
+            const minutes = new Date(now.toLocaleString('en-US', { timeZone: timeZone })).getMinutes();
+            const seconds = new Date(now.toLocaleString('en-US', { timeZone: timeZone })).getSeconds();
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            ctx.beginPath();
+            ctx.arc(0, 0, 70, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ffcc00';
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            drawClockHand(ctx, (hours % 12) * 30 + (minutes / 2), 40, 8); // Hour hand
+            drawClockHand(ctx, minutes * 6, 60, 4); // Minute hand
+            drawClockHand(ctx, seconds * 6, 70, 2); // Second hand
+
+            ctx.resetTransform();
+        }
+
+        function drawClockHand(ctx, angle, length, width) {
+            ctx.save();
+            ctx.rotate((angle - 90) * Math.PI / 180);
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillRect(0, -width / 2, length, width);
+            ctx.restore();
+        }
+
+        window.onload = () => {
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+        };
+    </script>
+</body>
+</html>
