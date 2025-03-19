@@ -95,12 +95,10 @@
 
     <div class="countdown" id="countdown"></div>
 
-    <!-- Bakgrundsmusik från SoundCloud, men spelar inte automatiskt -->
-    <iframe id="soundcloud-player" width="0" height="0" scrolling="no" frameborder="no" 
-    src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fsoundcloud.com%2Fphil-collins-official%2Fanother-day-in-paradise-1%3Futm_source%3Dclipboard%26utm_medium%3Dtext%26utm_campaign%3Dsocial_sharing&color=%23ffcc00&inverse=false&auto_play=false&show_artwork=false">
-    </iframe>
-
-    <button onclick="playMusic()">Spela Musik</button>
+    <!-- YouTube-video spelas upp med autoplay -->
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Qt2mbGP6vFI?si=A18K3xJfnS4Ky-j-&start=12&autoplay=1" 
+    title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
     <script>
         function convertToAustralia() {
@@ -148,13 +146,6 @@
             const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
             document.getElementById('countdown').textContent = `Nedräkning: ${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
-        function playMusic() {
-            const player = document.getElementById('soundcloud-player');
-            const playerSrc = player.src;
-            player.src = '';  // Stänger av spelaren
-            player.src = playerSrc;  // Startar om spelaren och spelar upp musiken
         }
 
         setInterval(updateCurrentTime, 1000);
