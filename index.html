@@ -38,16 +38,12 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0px 0px 15px rgba(255, 0, 255, 0.7);
-            width: 220px;
+            width: 250px;
             text-align: center;
             margin-bottom: 15px;
-        }
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-        }
-        p {
-            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         input, button {
             width: 100%;
@@ -59,45 +55,17 @@
             color: white;
             font-family: 'Press Start 2P', cursive;
             font-size: 0.8rem;
+            text-align: center;
         }
         button {
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+            box-shadow: 2px 2px 0px #00ffff;
         }
         button:hover {
             background: #00ffff;
-        }
-        canvas {
-            width: 120px;
-            height: 120px;
-            background: black;
-            border-radius: 50%;
-            border: 3px solid #ffcc00;
-            margin: 10px 0;
-        }
-        .countdown-box {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(20, 20, 20, 0.9);
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(255, 255, 0, 0.8);
-            text-align: center;
-            font-size: 1.5rem;
-            width: 80%;
-            max-width: 400px;
-        }
-        @media (max-width: 600px) {
-            .retro-text {
-                font-size: 1.5rem;
-            }
-            .time-box {
-                width: 90%;
-            }
-            canvas {
-                width: 100px;
-                height: 100px;
-            }
+            box-shadow: 2px 2px 0px #ff00ff;
         }
     </style>
 </head>
@@ -107,77 +75,47 @@
         <div class="time-box">
             <h2>Sverige</h2>
             <p id="sweden-time"></p>
-            <canvas id="sweden-clock" width="120" height="120"></canvas>
             <input type="time" id="sweden-input"> 
             <button onclick="convertToAustralia()">Konvertera till Australien</button>
         </div>
         <div class="time-box">
-            <h2>Australien (Sydney)</h2>
+            <h2>Australien</h2>
             <p id="australia-time"></p>
-            <canvas id="australia-clock" width="120" height="120"></canvas>
             <input type="time" id="australia-input">
             <button onclick="convertToSweden()">Konvertera till Sverige</button>
         </div>
     </div>
-
-    <!-- Nedräkning -->
-    <div class="countdown-box">
-        <h2>Nedräkning till 4 april 2025 kl. 17:00</h2>
-        <p id="countdown"></p>
-    </div>
-
     <script>
-        function updateCurrentTime() {
-            const now = new Date();
-            document.getElementById('sweden-time').textContent = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Stockholm', timeStyle: 'short' }).format(now);
-            document.getElementById('australia-time').textContent = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Australia/Sydney', timeStyle: 'short' }).format(now);
-        }
-
         function convertToAustralia() {
             const swedenInput = document.getElementById('sweden-input').value;
             if (!swedenInput) return;
             const [hours, minutes] = swedenInput.split(':').map(Number);
             let date = new Date();
-            date.setHours(hours, minutes);
+            date.setHours(hours, minutes, 0, 0);
             let australiaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
             document.getElementById('australia-input').value = australiaDate.toTimeString().slice(0,5);
         }
-        
+
         function convertToSweden() {
             const australiaInput = document.getElementById('australia-input').value;
             if (!australiaInput) return;
             const [hours, minutes] = australiaInput.split(':').map(Number);
             let date = new Date();
-            date.setHours(hours, minutes);
-            let swedenDate = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Stockholm' }));
-            document.getElementById('sweden-input').value = swedenDate.toTimeString().slice(0,5);
+            date.setHours(hours, minutes, 0, 0);
+            let swedenDate = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+            let utcTime = swedenDate.getTime() - (swedenDate.getTimezoneOffset() * 60000);
+            let correctSwedenDate = new Date(utcTime).toLocaleString('en-US', { timeZone: 'Europe/Stockholm' });
+            document.getElementById('sweden-input').value = new Date(correctSwedenDate).toTimeString().slice(0,5);
         }
 
-        function updateCountdown() {
-            const countdownElement = document.getElementById('countdown');
-            const targetDate = new Date('2025-04-04T17:00:00+02:00'); // 4 april 2025 kl. 17:00 svensk tid
-            const now = new Date();
-            const diff = targetDate - now;
-
-            if (diff <= 0) {
-                countdownElement.textContent = "Nedräkningen är klar!";
-                return;
-            }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            countdownElement.textContent = `${days} dagar, ${hours} timmar, ${minutes} min, ${seconds} sek`;
+        function updateCurrentTime() {
+            const nowSweden = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
+            const nowAustralia = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Australia/Sydney" }));
+            document.getElementById('sweden-time').textContent = nowSweden.toLocaleTimeString('sv-SE');
+            document.getElementById('australia-time').textContent = nowAustralia.toLocaleTimeString('sv-SE');
         }
-
-        window.onload = () => {
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 1000);
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        };
+        setInterval(updateCurrentTime, 1000);
+        window.onload = updateCurrentTime;
     </script>
 </body>
 </html>
