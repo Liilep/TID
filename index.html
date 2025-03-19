@@ -76,41 +76,27 @@
             border: 3px solid #ffcc00;
             margin: 10px 0;
         }
-
-        /* Mobilanpassning */
+        .countdown-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 0, 0.8);
+            text-align: center;
+            font-size: 1.5rem;
+            width: 80%;
+            max-width: 400px;
+        }
         @media (max-width: 600px) {
             .retro-text {
                 font-size: 1.5rem;
-                text-shadow: 2px 2px 0px #ff00ff, 4px 4px 0px #00ffff;
-                line-height: 1.2; /* Förhindrar att texten delar sig */
             }
             .time-box {
-                width: 90%; /* Anpassar bredden */
+                width: 90%;
             }
             canvas {
                 width: 100px;
                 height: 100px;
-            }
-            input, button {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .retro-text {
-                font-size: 1.3rem;
-            }
-            .time-box {
-                width: 100%;
-                padding: 12px;
-            }
-            canvas {
-                width: 90px;
-                height: 90px;
-            }
-            input, button {
-                font-size: 0.8rem;
-                padding: 6px;
             }
         }
     </style>
@@ -133,6 +119,13 @@
             <button onclick="convertToSweden()">Konvertera till Sverige</button>
         </div>
     </div>
+
+    <!-- Nedräkning -->
+    <div class="countdown-box">
+        <h2>Nedräkning till 4 april 2025 kl. 17:00</h2>
+        <p id="countdown"></p>
+    </div>
+
     <script>
         function updateCurrentTime() {
             const now = new Date();
@@ -160,9 +153,30 @@
             document.getElementById('sweden-input').value = swedenDate.toTimeString().slice(0,5);
         }
 
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const targetDate = new Date('2025-04-04T17:00:00+02:00'); // 4 april 2025 kl. 17:00 svensk tid
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                countdownElement.textContent = "Nedräkningen är klar!";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `${days} dagar, ${hours} timmar, ${minutes} min, ${seconds} sek`;
+        }
+
         window.onload = () => {
             updateCurrentTime();
             setInterval(updateCurrentTime, 1000);
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         };
     </script>
 </body>
