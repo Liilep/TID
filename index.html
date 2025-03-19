@@ -67,13 +67,6 @@
             background: #00ffff;
             box-shadow: 2px 2px 0px #ff00ff;
         }
-        .countdown {
-            margin-top: 30px;
-            font-size: 1.5rem;
-            color: #ffcc00;
-            font-weight: bold;
-            text-shadow: 2px 2px 0px #ff00ff;
-        }
     </style>
 </head>
 <body>
@@ -93,12 +86,12 @@
         </div>
     </div>
 
-    <div class="countdown" id="countdown"></div>
-
-    <!-- YouTube-video spelas upp med autoplay -->
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/Qt2mbGP6vFI?si=A18K3xJfnS4Ky-j-&start=12&autoplay=1" 
-    title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <!-- SoundCloud player -->
+    <iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/913419400&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
+    <div style="font-size: 10px; color: #cccccc; line-break: anywhere; word-break: normal; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif; font-weight: 100;">
+        <a href="https://soundcloud.com/phil-collins-official" title="Phil Collins" target="_blank" style="color: #cccccc; text-decoration: none;">Phil Collins</a> · 
+        <a href="https://soundcloud.com/phil-collins-official/another-day-in-paradise-1" title="Another Day In Paradise" target="_blank" style="color: #cccccc; text-decoration: none;">Another Day In Paradise</a>
+    </div>
 
     <script>
         function convertToAustralia() {
@@ -129,27 +122,7 @@
             document.getElementById('sweden-time').textContent = nowSweden.toLocaleTimeString('sv-SE');
             document.getElementById('australia-time').textContent = nowAustralia.toLocaleTimeString('sv-SE');
         }
-
-        function updateCountdown() {
-            const targetDate = new Date('2025-04-04T17:00:00+02:00'); // 4 april 2025 17:00 svensk tid
-            const now = new Date();
-            const remainingTime = targetDate - now;
-
-            if (remainingTime <= 0) {
-                document.getElementById('countdown').textContent = "Nedräkningen är slut!";
-                return;
-            }
-
-            const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-            document.getElementById('countdown').textContent = `Nedräkning: ${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-
         setInterval(updateCurrentTime, 1000);
-        setInterval(updateCountdown, 1000);
         window.onload = updateCurrentTime;
     </script>
 </body>
