@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tid i Sverige & Australien</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.0.1/luxon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -135,58 +136,51 @@
         function convertToAustralia() {
             const swedenInput = document.getElementById('sweden-input').value;
             if (!swedenInput) return;
-            
-            // Hämta timmar och minuter från input
+
             const [hours, minutes] = swedenInput.split(':').map(Number);
-            let date = new Date();
-            
-            // Ställ in den svenska tiden till den valda tiden
-            date.setHours(hours, minutes, 0, 0);
+            let swedenDate = luxon.DateTime.fromObject({
+                hour: hours,
+                minute: minutes
+            }).setZone('Europe/Stockholm');
 
-            // Konvertera till svensk tidzon först
-            let swedenTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Stockholm' }));
-
-            // Konvertera från svensk tid (UTC +1 eller +2 beroende på sommartid) till Brisbane (UTC +10)
-            let australiaDate = new Date(swedenTime.getTime() + 9 * 60 * 60 * 1000); // 9 timmar framåt för Brisbane
+            // Konvertera från svensk tid (Stockholm) till Brisbane (UTC+10)
+            let australiaTime = swedenDate.setZone('Australia/Brisbane');
 
             // Visa den konverterade tiden i Australien
-            document.getElementById('australia-input').value = australiaDate.toTimeString().slice(0,5);
+            document.getElementById('australia-input').value = australiaTime.toFormat('HH:mm');
         }
 
         function convertToSweden() {
             const australiaInput = document.getElementById('australia-input').value;
             if (!australiaInput) return;
-            
-            // Hämta timmar och minuter från input
+
             const [hours, minutes] = australiaInput.split(':').map(Number);
-            let date = new Date();
-            
-            // Ställ in den australiensiska tiden till den valda tiden
-            date.setHours(hours, minutes, 0, 0);
+            let australiaDate = luxon.DateTime.fromObject({
+                hour: hours,
+                minute: minutes
+            }).setZone('Australia/Brisbane');
 
-            // Konvertera till Brisbane-tid först
-            let australiaTime = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Brisbane' }));
-
-            // Konvertera från Brisbane (UTC +10) till svensk tid (UTC +1 eller +2 beroende på sommartid)
-            let swedenDate = new Date(australiaTime.getTime() - 9 * 60 * 60 * 1000); // 9 timmar bakåt för Sverige
+            // Konvertera från Brisbane (UTC+10) till svensk tid (Stockholm)
+            let swedenTime = australiaDate.setZone('Europe/Stockholm');
 
             // Visa den konverterade tiden i Sverige
-            document.getElementById('sweden-input').value = swedenDate.toTimeString().slice(0,5);
+            document.getElementById('sweden-input').value = swedenTime.toFormat('HH:mm');
         }
 
         function updateCurrentTime() {
-            const nowSweden = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
-            const nowAustralia = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Australia/Brisbane" }));
-            document.getElementById('sweden-time').textContent = nowSweden.toLocaleTimeString('sv-SE');
-            document.getElementById('australia-time').textContent = nowAustralia.toLocaleTimeString('sv-SE');
+            const nowSweden = luxon.DateTime.now().setZone('Europe/Stockholm');
+            const nowAustralia = luxon.DateTime.now().setZone('Australia/Brisbane');
+            document.getElementById('sweden-time').textContent = nowSweden.toFormat('HH:mm');
+            document.getElementById('australia-time').textContent = nowAustralia.toFormat('HH:mm');
         }
+
         setInterval(updateCurrentTime, 1000);
         window.onload = updateCurrentTime;
 
         // Nedräkning till 4 april 2025 17:00 svensk tid
         function updateCountdown() {
-            const countdownDate = new Date("2025-04-04T17:00:00+02:00").getTime();
-            const now = new Date().getTime();
+            const countdownDate = luxon.DateTime.fromISO("2025-04-04T17:00:00+02:00").toMillis();
+            const now = Date.now();
             const timeLeft = countdownDate - now;
 
             if (timeLeft < 0) {
