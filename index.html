@@ -135,28 +135,48 @@
         function convertToAustralia() {
             const swedenInput = document.getElementById('sweden-input').value;
             if (!swedenInput) return;
+            
+            // Hämta timmar och minuter från input
             const [hours, minutes] = swedenInput.split(':').map(Number);
             let date = new Date();
+            
+            // Ställ in den svenska tiden till den valda tiden
             date.setHours(hours, minutes, 0, 0);
-            let australiaDate = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+
+            // Konvertera till svensk tidzon först
+            let swedenTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Stockholm' }));
+
+            // Konvertera från svensk tid (UTC +1 eller +2 beroende på sommartid) till Brisbane (UTC +10)
+            let australiaDate = new Date(swedenTime.getTime() + 9 * 60 * 60 * 1000); // 9 timmar framåt för Brisbane
+
+            // Visa den konverterade tiden i Australien
             document.getElementById('australia-input').value = australiaDate.toTimeString().slice(0,5);
         }
 
         function convertToSweden() {
             const australiaInput = document.getElementById('australia-input').value;
             if (!australiaInput) return;
+            
+            // Hämta timmar och minuter från input
             const [hours, minutes] = australiaInput.split(':').map(Number);
             let date = new Date();
+            
+            // Ställ in den australiensiska tiden till den valda tiden
             date.setHours(hours, minutes, 0, 0);
-            let swedenDate = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
-            let utcTime = swedenDate.getTime() - (swedenDate.getTimezoneOffset() * 60000);
-            let correctSwedenDate = new Date(utcTime).toLocaleString('en-US', { timeZone: 'Europe/Stockholm' });
-            document.getElementById('sweden-input').value = new Date(correctSwedenDate).toTimeString().slice(0,5);
+
+            // Konvertera till Brisbane-tid först
+            let australiaTime = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Brisbane' }));
+
+            // Konvertera från Brisbane (UTC +10) till svensk tid (UTC +1 eller +2 beroende på sommartid)
+            let swedenDate = new Date(australiaTime.getTime() - 9 * 60 * 60 * 1000); // 9 timmar bakåt för Sverige
+
+            // Visa den konverterade tiden i Sverige
+            document.getElementById('sweden-input').value = swedenDate.toTimeString().slice(0,5);
         }
 
         function updateCurrentTime() {
             const nowSweden = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Europe/Stockholm" }));
-            const nowAustralia = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Australia/Sydney" }));
+            const nowAustralia = new Date(new Date().toLocaleString("sv-SE", { timeZone: "Australia/Brisbane" }));
             document.getElementById('sweden-time').textContent = nowSweden.toLocaleTimeString('sv-SE');
             document.getElementById('australia-time').textContent = nowAustralia.toLocaleTimeString('sv-SE');
         }
