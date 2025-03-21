@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tid i Sverige & Australien</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.0.1/luxon.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
@@ -133,45 +132,47 @@
             }
         }
 
+        // Konvertera från svensk tid (UTC+1 eller UTC+2 beroende på sommar/vintertid) till australiensisk tid (Brisbane, UTC+10)
         function convertToAustralia() {
             const swedenInput = document.getElementById('sweden-input').value;
             if (!swedenInput) return;
 
             const [hours, minutes] = swedenInput.split(':').map(Number);
-            let swedenDate = luxon.DateTime.fromObject({
-                hour: hours,
-                minute: minutes
-            }).setZone('Europe/Stockholm');
-
-            // Konvertera från svensk tid (Stockholm) till Brisbane (UTC+10)
-            let australiaTime = swedenDate.setZone('Australia/Brisbane');
+            let swedenTime = new Date();
+            swedenTime.setHours(hours);
+            swedenTime.setMinutes(minutes);
+            
+            // Lägg till 9 timmar för att konvertera till Brisbane-tid
+            let australiaTime = new Date(swedenTime.getTime() + (9 * 60 * 60 * 1000));
 
             // Visa den konverterade tiden i Australien
-            document.getElementById('australia-input').value = australiaTime.toFormat('HH:mm');
+            document.getElementById('australia-input').value = australiaTime.toTimeString().slice(0, 5);
         }
 
+        // Konvertera från australiensisk tid (Brisbane, UTC+10) till svensk tid
         function convertToSweden() {
             const australiaInput = document.getElementById('australia-input').value;
             if (!australiaInput) return;
 
             const [hours, minutes] = australiaInput.split(':').map(Number);
-            let australiaDate = luxon.DateTime.fromObject({
-                hour: hours,
-                minute: minutes
-            }).setZone('Australia/Brisbane');
+            let australiaTime = new Date();
+            australiaTime.setHours(hours);
+            australiaTime.setMinutes(minutes);
 
-            // Konvertera från Brisbane (UTC+10) till svensk tid (Stockholm)
-            let swedenTime = australiaDate.setZone('Europe/Stockholm');
+            // Subtrahera 9 timmar för att konvertera till svensk tid
+            let swedenTime = new Date(australiaTime.getTime() - (9 * 60 * 60 * 1000));
 
             // Visa den konverterade tiden i Sverige
-            document.getElementById('sweden-input').value = swedenTime.toFormat('HH:mm');
+            document.getElementById('sweden-input').value = swedenTime.toTimeString().slice(0, 5);
         }
 
         function updateCurrentTime() {
-            const nowSweden = luxon.DateTime.now().setZone('Europe/Stockholm');
-            const nowAustralia = luxon.DateTime.now().setZone('Australia/Brisbane');
-            document.getElementById('sweden-time').textContent = nowSweden.toFormat('HH:mm');
-            document.getElementById('australia-time').textContent = nowAustralia.toFormat('HH:mm');
+            const nowSweden = new Date();
+            nowSweden.setHours(nowSweden.getHours() - 1); // Justera för svensk tid (UTC+1)
+            const nowAustralia = new Date();
+            nowAustralia.setHours(nowAustralia.getHours() + 9); // Justera för Brisbane-tid (UTC+10)
+            document.getElementById('sweden-time').textContent = nowSweden.toTimeString().slice(0, 5);
+            document.getElementById('australia-time').textContent = nowAustralia.toTimeString().slice(0, 5);
         }
 
         setInterval(updateCurrentTime, 1000);
@@ -179,8 +180,8 @@
 
         // Nedräkning till 4 april 2025 17:00 svensk tid
         function updateCountdown() {
-            const countdownDate = luxon.DateTime.fromISO("2025-04-04T17:00:00+02:00").toMillis();
-            const now = Date.now();
+            const countdownDate = new Date("2025-04-04T17:00:00+02:00").getTime();
+            const now = new Date().getTime();
             const timeLeft = countdownDate - now;
 
             if (timeLeft < 0) {
